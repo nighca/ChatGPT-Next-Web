@@ -261,7 +261,7 @@ export function SideBar(props: { className?: string }) {
             text={shouldNarrow ? undefined : Locale.Mask.Name}
             className={styles["sidebar-bar-button"]}
             onClick={() => {
-              if (config.dontShowMaskSplashScreen !== true) {
+              if (true) {
                 navigate(Path.NewChat, { state: { fromHome: true } });
               } else {
                 navigate(Path.Masks, { state: { fromHome: true } });
@@ -352,7 +352,7 @@ export function SideBar(props: { className?: string }) {
             icon={<AddIcon />}
             text={shouldNarrow ? undefined : Locale.Home.NewChat}
             onClick={() => {
-              if (config.dontShowMaskSplashScreen) {
+              if (true) {
                 chatStore.newSession();
                 navigate(Path.Chat);
               } else {

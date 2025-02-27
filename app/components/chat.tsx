@@ -34,6 +34,7 @@ import ConfirmIcon from "../icons/confirm.svg";
 import CloseIcon from "../icons/close.svg";
 import CancelIcon from "../icons/cancel.svg";
 import ImageIcon from "../icons/image.svg";
+import DownloadIcon from "../icons/download.svg";
 
 import LightIcon from "../icons/light.svg";
 import DarkIcon from "../icons/dark.svg";
@@ -75,6 +76,7 @@ import {
   useMobileScreen,
   selectOrCopy,
   showPlugins,
+  getMessageDocumentFile,
 } from "../utils";
 
 import { uploadImage as uploadImageRemote } from "@/app/utils/chat";
@@ -225,6 +227,59 @@ export function SessionConfigModel(props: { onClose: () => void }) {
             )
           }
         ></MaskConfig>
+      </Modal>
+    </div>
+  );
+}
+
+type DocumentFile = {
+  name: string;
+  content: string;
+};
+
+export function DocumentFileModal({
+  file,
+  onClose,
+}: {
+  file: DocumentFile;
+  onClose: () => void;
+}) {
+  return (
+    <div className="modal-mask">
+      <Modal
+        title={file.name}
+        onClose={onClose}
+        actions={[
+          <IconButton
+            key="download"
+            icon={<DownloadIcon />}
+            bordered
+            text="下载"
+            onClick={async () => {
+              const blob = new Blob([file.content], {
+                type: "text/plain;charset=utf-8",
+              });
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement("a");
+              a.href = url;
+              a.download = file.name;
+              document.body.appendChild(a);
+              a.click();
+              document.body.removeChild(a);
+            }}
+          />,
+          <IconButton
+            key="copy"
+            icon={<CopyIcon />}
+            bordered
+            text="复制"
+            onClick={() => {
+              copyToClipboard(file.content);
+            }}
+          />,
+        ]}
+      >
+        <Markdown content={file.content} />
       </Modal>
     </div>
   );
@@ -1679,6 +1734,8 @@ function _Chat() {
 
   const [showChatSidePanel, setShowChatSidePanel] = useState(false);
 
+  const [documentFile, setDocumentFile] = useState<DocumentFile | null>(null);
+
   return (
     <>
       <div className={styles.chat} key={session.id}>
@@ -1767,6 +1824,13 @@ function _Chat() {
             showModal={showPromptModal}
             setShowModal={setShowPromptModal}
           />
+
+          {documentFile != null && (
+            <DocumentFileModal
+              file={documentFile}
+              onClose={() => setDocumentFile(null)}
+            />
+          )}
         </div>
         <div className={styles["chat-main"]}>
           <div className={styles["chat-body-container"]}>
@@ -1984,6 +2048,29 @@ function _Chat() {
                               fontFamily={fontFamily}
                               parentRef={scrollRef}
                               defaultShow={i >= messages.length - 6}
+                              onClick={(e) => {
+                                if (
+                                  e.target instanceof HTMLElement &&
+                                  e.target.tagName === "A"
+                                ) {
+                                  const a = e.target as HTMLAnchorElement;
+                                  const idx = a.href.indexOf("#document-file-");
+                                  if (idx < 0) return;
+                                  e.preventDefault();
+                                  const filename = decodeURIComponent(
+                                    a.href.substring(
+                                      idx + "#document-file-".length,
+                                    ),
+                                  );
+                                  console.log("file clicked:", filename);
+                                  const file = getMessageDocumentFile(
+                                    message,
+                                    filename,
+                                  );
+                                  if (file == null) return;
+                                  setDocumentFile(file);
+                                }
+                              }}
                             />
                             {getMessageImages(message).length == 1 && (
                               <img

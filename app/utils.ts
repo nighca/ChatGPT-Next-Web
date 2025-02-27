@@ -233,13 +233,51 @@ export function isMacOS(): boolean {
   return false;
 }
 
-export function getMessageTextContent(message: RequestMessage) {
+function getText(text: string) {
+  const pattern =
+    /\<document\-file name\=\"([^\"]*)\"\>([\s\S]*)\<\/document\-file\>/g;
+  return text.replace(pattern, (_, name, content) => {
+    return `[${name}](#document-file-${encodeURIComponent(name)})`;
+  });
+}
+
+function getDocumentFile(text: string, filename: string) {
+  const pattern =
+    /\<document\-file name\=\"([^\"]*)\"\>([\s\S]*)\<\/document\-file\>/g;
+  let match;
+  while ((match = pattern.exec(text)) !== null) {
+    if (match[1] === filename) {
+      return {
+        name: filename,
+        content: match[2].replace(/^\n*/, "").replace(/\n*$/, "\n"),
+      };
+    }
+  }
+  return null;
+}
+
+export function getMessageDocumentFile(
+  message: RequestMessage,
+  filename: string,
+) {
   if (typeof message.content === "string") {
-    return message.content;
+    return getDocumentFile(message.content, filename);
   }
   for (const c of message.content) {
     if (c.type === "text") {
-      return c.text ?? "";
+      return getDocumentFile(c.text ?? "", filename);
+    }
+  }
+  return null;
+}
+
+export function getMessageTextContent(message: RequestMessage) {
+  if (typeof message.content === "string") {
+    return getText(message.content);
+  }
+  for (const c of message.content) {
+    if (c.type === "text") {
+      return getText(c.text ?? "");
     }
   }
   return "";

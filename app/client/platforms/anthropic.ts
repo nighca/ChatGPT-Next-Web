@@ -32,6 +32,7 @@ export type AnthropicMessage = {
 
 export interface AnthropicChatRequest {
   model: string; // The model that will complete your prompt.
+  system: string;
   messages: AnthropicMessage[]; // The prompt that you want Claude to complete.
   max_tokens: number; // The maximum number of tokens to generate before stopping.
   stop_sequences?: string[]; // Sequences that will cause the model to stop generating completion text.
@@ -95,6 +96,7 @@ export class ClaudeApi implements LLMApi {
       ...useChatStore.getState().currentSession().mask.modelConfig,
       ...{
         model: options.config.model,
+        max_tokens: 5000,
       },
     };
 
@@ -180,6 +182,19 @@ export class ClaudeApi implements LLMApi {
     }
 
     const requestBody: AnthropicChatRequest = {
+      system: `\
+Properly use tag \`document-file\` to wrap content parts in your reply, so that the user can recognize that and take the wrapped content as standalone document files.
+
+For example:
+
+"""
+<document-file name="test.md">
+# Title
+
+This is a test document file.
+</document-file>
+"""
+`,
       messages: prompt,
       stream: shouldStream,
 

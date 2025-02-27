@@ -80,3 +80,5 @@ export const preferredRegion = [
   "sin1",
   "syd1",
 ];
+
+export const maxDuration = 60;
