@@ -287,7 +287,7 @@ export function DocumentFileModal({
 
 function DocumentFileView({ file }: { file: DocumentFile }) {
   if (file.name.endsWith(".md")) return <Markdown content={file.content} />;
-  const lang = extname(file.name);
+  const lang = extname(file.name).slice(1);
   const mdContent = "```" + lang + "\n" + file.content + "\n```";
   return <Markdown content={mdContent} />;
 }
