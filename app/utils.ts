@@ -235,7 +235,7 @@ export function isMacOS(): boolean {
 
 function getText(text: string) {
   const pattern =
-    /\<document\-file name\=\"([^\"]*)\"\>([\s\S]*)\<\/document\-file\>/g;
+    /\<document\-file name\=\"([^\"]*)\"\>([\s\S]*?)\<\/document\-file\>/g;
   return text.replace(pattern, (_, name, content) => {
     return `[${name}](#document-file-${encodeURIComponent(name)})`;
   });
@@ -243,7 +243,7 @@ function getText(text: string) {
 
 function getDocumentFile(text: string, filename: string) {
   const pattern =
-    /\<document\-file name\=\"([^\"]*)\"\>([\s\S]*)\<\/document\-file\>/g;
+    /\<document\-file name\=\"([^\"]*)\"\>([\s\S]*?)\<\/document\-file\>/g;
   let match;
   while ((match = pattern.exec(text)) !== null) {
     if (match[1] === filename) {

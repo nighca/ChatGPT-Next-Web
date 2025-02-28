@@ -177,8 +177,8 @@ function CustomCode(props: { children: any; className?: string }) {
   const chatStore = useChatStore();
   const session = chatStore.currentSession();
   const config = useAppConfig();
-  const enableCodeFold =
-    session.mask?.enableCodeFold !== false && config.enableCodeFold;
+  const enableCodeFold = false;
+  // session.mask?.enableCodeFold !== false && config.enableCodeFold;
 
   const ref = useRef<HTMLPreElement>(null);
   const [collapsed, setCollapsed] = useState(true);

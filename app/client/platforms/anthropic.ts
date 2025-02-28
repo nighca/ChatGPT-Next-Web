@@ -183,7 +183,7 @@ export class ClaudeApi implements LLMApi {
 
     const requestBody: AnthropicChatRequest = {
       system: `\
-Properly use tag \`document-file\` to wrap content parts in your reply, so that the user can recognize that and take the wrapped content as standalone document files.
+Use the \`document-file\` tag to encapsulate content parts in your response. This helps the user identify and treat the encapsulated content as standalone document files.
 
 For example:
 
@@ -194,6 +194,18 @@ For example:
 This is a test document file.
 </document-file>
 """
+
+"""
+<document-file name="hello.go">
+package main
+
+func main() {
+\tprintln("Hello, World!")
+}
+</document-file>
+"""
+
+Adhere to the \`max_tokens\` setting and avoid providing incomplete content.
 `,
       messages: prompt,
       stream: shouldStream,

@@ -279,10 +279,29 @@ export function DocumentFileModal({
           />,
         ]}
       >
-        <Markdown content={file.content} />
+        <DocumentFileView file={file} />
       </Modal>
     </div>
   );
+}
+
+function DocumentFileView({ file }: { file: DocumentFile }) {
+  if (file.name.endsWith(".md")) return <Markdown content={file.content} />;
+  const lang = extname(file.name);
+  const mdContent = "```" + lang + "\n" + file.content + "\n```";
+  return <Markdown content={mdContent} />;
+}
+
+function stripExt(urlOrPath: string) {
+  const slashPos = urlOrPath.lastIndexOf("/");
+  const dotPos = urlOrPath.lastIndexOf(".");
+  if (dotPos > slashPos + 1) return urlOrPath.slice(0, dotPos);
+  return urlOrPath;
+}
+
+/** get extname, with dot. e.g. `.txt` */
+function extname(urlOrPath: string) {
+  return urlOrPath.slice(stripExt(urlOrPath).length);
 }
 
 function PromptToast(props: {
