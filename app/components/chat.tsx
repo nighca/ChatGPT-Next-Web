@@ -248,6 +248,7 @@ export function DocumentFileModal({
     <div className="modal-mask">
       <Modal
         title={file.name}
+        defaultMax
         onClose={onClose}
         actions={[
           <IconButton
