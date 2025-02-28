@@ -188,14 +188,16 @@ Use the \`document-file\` tag to encapsulate content parts in your response. Thi
 For example:
 
 """
+This is a document file:
+
 <document-file name="test.md">
 # Title
 
 This is a test document file.
 </document-file>
-"""
 
-"""
+This is a code file:
+
 <document-file name="hello.go">
 package main
 
@@ -205,7 +207,7 @@ func main() {
 </document-file>
 """
 
-Adhere to the \`max_tokens\` setting and avoid providing incomplete content.
+DO NOT put <document-file> in code blocks.
 `,
       messages: prompt,
       stream: shouldStream,
