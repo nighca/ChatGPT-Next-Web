@@ -494,6 +494,9 @@ const openaiModels = [
   "o1-mini",
   "o1-preview",
   "o3-mini",
+  "anthropic/claude-3.5-haiku",
+  "anthropic/claude-3.5-sonnet",
+  "anthropic/claude-3.7-sonnet",
 ];
 
 const googleModels = [

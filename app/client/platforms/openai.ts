@@ -216,6 +216,42 @@ export class ChatGPTApi implements LLMApi {
     } else {
       const visionModel = isVisionModel(options.config.model);
       const messages: ChatOptions["messages"] = [];
+      messages.push({
+        role: "system",
+        content: `\
+# Use \`<document-file>\`
+
+Use the \`document-file\` tag to encapsulate content parts in your response. This helps the user identify and treat the encapsulated content as standalone document files.
+
+For example:
+
+"""
+This is a document file:
+
+<document-file name="test.md">
+# Title
+
+This is a test document file.
+</document-file>
+
+This is a code file:
+
+<document-file name="hello.go">
+package main
+
+func main() {
+\tprintln("Hello, World!")
+}
+</document-file>
+"""
+
+DO NOT put <document-file> in code blocks.
+
+# Split the response if necessary
+
+Respect the max_tokens limit of the model. If the response exceeds the limit, split it into multiple parts and send one part at a time.
+`,
+      });
       for (const v of options.messages) {
         const content = visionModel
           ? await preProcessImageContent(v.content)
@@ -233,7 +269,7 @@ export class ChatGPTApi implements LLMApi {
         presence_penalty: !isO1OrO3 ? modelConfig.presence_penalty : 0,
         frequency_penalty: !isO1OrO3 ? modelConfig.frequency_penalty : 0,
         top_p: !isO1OrO3 ? modelConfig.top_p : 1,
-        // max_tokens: Math.max(modelConfig.max_tokens, 1024),
+        max_tokens: Math.max(modelConfig.max_tokens, 5000),
         // Please do not ask me why not send max_tokens, no reason, this param is just shit, I dont want to explain anymore.
       };
 
